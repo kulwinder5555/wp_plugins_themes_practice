@@ -4,6 +4,12 @@ class password_page_selector{
     
     public function render() {
        ob_start();
+
+       // Ge saved options
+        $saved_password = get_option('ppp_password_id', '');
+        $saved_protection_page_id = get_option('ppp_protection_page_id', 0);
+        $saved_page_id = get_option('ppp_page_id', 0);
+        $saved_post_id = get_option('ppp_post_id', 0);
         
        ?>
          <div class="wrap">
@@ -16,52 +22,63 @@ class password_page_selector{
 
               <form method="post" action="pp_save_settings" id="ppp-settings-form">
                 <input type="hidden" name="ppp_action" value="save_settings">
-                 
-                <!-- Password Field -->
-                 <div class="pp-password-field">
+
+                <!--#Password Field-->
+                 <div class="ppp-password-field">
                   <label for='ppp_password'>Your Password</label>
                   <p>Add a password to protect your content.</p>
-                  <input type='password' id='ppp_password' name='password' required>
+                  <input type='password'name='ppp_password' id='ppp_password_id' 
+                   value='<?php echo esc_attr($saved_password); ?>' required>
                   <button type="button" id="ppp-show-password" class="button">Show Password</button>
                  </div>
+                <!--#Password Field End-->
                  
-                 <!-- Password Page Selector -->
-                 
+                <!--#Password Page Selector-->
                  <div class="pp-password-page-selector">
                   <label for="ppp_protection_page">Select Protection Page</label>
                   <p>If You don't have a password-protected page yet, 
                     create one using the [password_protector_form] shortcode.</p>
                   
-                    <select name="protection_page_id" id="ppp_protection_page">
+                    <select name="ppp_protection_page" id="ppp_protection_page_id">
+                       <!-- Default option -->
+                      <option value="">--No Protection Page--</option>
                       <?php
                           $pages = get_pages(array('numberpages'=>-1));
                             foreach ( $pages as $page ) {
 
                             if (has_shortcode($page->post_content, 'password_protector_form')) {
-                                  echo "<option value='{$page->ID}'>{$page->post_title}</option>";
+                                  echo "<option value='{$page->ID}' " 
+                                  . selected($saved_protection_page_id, $page->ID, false) . ">
+                                  {$page->post_title}</option>";
                             }
+
                         }
                       ?>
                     </select>
                  </div>
+                <!--#Password Page Selector End-->
 
-                 <!--Password Protected Page Selector -->
-                 
+                <!--#Password Protected Page Selector-->
+
                  <div class="pp-protection-page-to-protect-selector">
 
-                     <label for="ppp_page_id">Select Page You Want To Protect  </label>
+                     <label for="page_id">Select Page You Want To Protect  </label>
                       <p>Select a page from the list below to apply password protection.</p>
                       <select name="page_id" id="ppp_page_id">
                       
                         <!-- Default option -->
-                        <option value="">--No Page--</option>
+                        <option value="" >--No Page--</option>
                       
                         <?php
                         $pages = get_pages(array('numberpages'=>-1));
                           foreach ( $pages as $page ) {
                             if (!has_shortcode($page->post_content, 'password_protector_form')) {
-                                    echo "<option value='{$page->ID}'>{$page->post_title}</option>";
-                              }
+                                
+
+                                 echo "<option value='{$page->ID}'" 
+                                 . selected($saved_page_id, $page->ID, false) . ">{$page->post_title}</option>";
+
+                            }
                         }
 
                       ?>
@@ -69,12 +86,13 @@ class password_page_selector{
                       </select>
 
                  </div>
+                <!--#Password Protected Page Selector End-->
 
-                  <!--Password Protected Post Selector -->
+                <!-- #Password Protected Post Selector -->
                   
                   <div class="pp-protection-post-to-protect-selector">
 
-                    <label for="ppp_post_id">Select Post You Want to Protect:</label>
+                    <label for="post_id">Select Post You Want to Protect:</label>
                      <p>select a post from the list below to apply password protection.</p>
                     <select name="post_id" id="ppp_post_id">
                       
@@ -85,13 +103,17 @@ class password_page_selector{
                       $posts = get_posts( array( 'numberposts' => -1 ) );
                       foreach ( $posts as $post ) {
                           if ( ! has_shortcode( $post->post_content, 'password_protector_form' ) ) {
-                              echo "<option value='{$post->ID}'>{$post->post_title}</option>";
+                              echo "<option value='{$post->ID}'" 
+                              . selected( $saved_post_id, $post->ID, false ) . "
+                              >{$post->post_title}</option>";
                           }
                       }
                       ?>
                     </select>
 
                   </div>
+
+                <!-- #Password Protected Post Selector End -->
                  
                   
                 <button type="submit"  id="ppp-save-btn" class="button button-primary">Save Settings</button>

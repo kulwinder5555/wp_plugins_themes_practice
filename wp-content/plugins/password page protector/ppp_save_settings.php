@@ -18,10 +18,10 @@ class ppp_save_settings {
         $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 
         // Save the settings (you can use update_option or a custom table)
-        update_option( 'ppp_password', $password );
+        update_option( 'ppp_password_id', $password );
         update_option( 'ppp_protection_page_id', $protection_page_id );
-        update_option( 'ppp_protected_page_id', $page_id );
-        update_option( 'ppp_protected_post_id', $post_id );
+        update_option( 'ppp_page_id', $page_id );
+        update_option( 'ppp_post_id', $post_id );
 
         // Send a success response
         wp_send_json_success( array( 'message' => 'Settings saved successfully.' ) );
